@@ -4,6 +4,7 @@ package std701.cmms.api.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "inventories")
@@ -24,7 +25,7 @@ public class Inventory {
     @JoinColumn(name = "supplier")
     private Supplier supplier;
     private String inventoryDesc;
-    private double quantity;
+    private BigDecimal quantity;
     private Boolean isActive;
     private java.sql.Timestamp createdAt;
 
@@ -74,11 +75,11 @@ public class Inventory {
     }
 
 
-    public double getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(double quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 

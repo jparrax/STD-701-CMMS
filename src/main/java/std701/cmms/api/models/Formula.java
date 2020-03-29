@@ -1,6 +1,7 @@
 package std701.cmms.api.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -21,6 +22,7 @@ public class Formula {
     private Boolean isActive;
     private java.sql.Timestamp createdAt;
 
+    @Where(clause = "is_active = 'true'")
     @OneToMany(mappedBy = "formula")
     private Set<Ingredient> ingredientList;
 
