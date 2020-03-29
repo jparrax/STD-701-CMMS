@@ -54,45 +54,59 @@ public class FormulaController {
     }
 
     @PostMapping
-    public HttpResponse<Formula> saveFormula(@RequestBody Formula reqFormula) {
+    public HttpResponse<Formula> saveFormula(@RequestBody Formula formula) {
         HttpResponse<Formula> httpResponse = new HttpResponse<>();
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-        User defaultUser = userRepository.findById(1).orElse(null);
-        Formula newFormula = new Formula();
-
-        newFormula.setFormulaName(reqFormula.getFormulaName());
-        newFormula.setFormulaDesc(reqFormula.getFormulaDesc());
-        newFormula.setIsActive(true);
-        newFormula.setCreatedAt(currentTimestamp);
-        Set<Ingredient> ingredients;
         //Set defaultUser
-        newFormula.setUser(defaultUser);
+        User defaultUser = userRepository.findById(1).orElse(null);
+        Set<Ingredient> ingredients;
+
+        if (formula.getFormulaId() == null) {
+
+            formula.setIsActive(true);
+            formula.setCreatedAt(currentTimestamp);
+            formula.setUser(defaultUser);
+        }
         //Save new formula or Update existing formula
-        newFormula = formulaRepository.save(newFormula);
-        Formula finalNewFormula = newFormula;
-        ingredients = reqFormula.getIngredientList()
-                .stream()
-                .map(ingredient -> {
-                    ingredient.setFormula(finalNewFormula);
-                    ingredient.setRawMaterial(
-                            rawMaterialRepository.findById(
-                                    ingredient.getRawMaterial().getMaterialId()).orElse(null));
-                    ingredient.setUser(defaultUser);
-                    ingredient.setInputDate(currentTimestamp);
-                    ingredient.setIsActive(true);
-                    ingredient.setCreatedAt(currentTimestamp);
-                    return ingredient;
-                }).collect(Collectors.toSet());
-        //Save all ingredients in
-        ingredients = StreamSupport.stream(
-                ingredientRepository.saveAll(ingredients).spliterator(), false)
-                .collect(Collectors.toSet());
+        formula = formulaRepository.save(formula);
+        //After save if that return formula has ID that's mean success
+        if (formula.getFormulaId() != null) {
+            Formula finalFormula = formula;
+            ingredients = formula.getIngredientList()
+                    .stream()
+                    .map(ingredient -> {
+                        ingredient.setFormula(finalFormula);
+                        ingredient.setRawMaterial(
+                                rawMaterialRepository.findById(
+                                        ingredient.getRawMaterial().getMaterialId())
+                                        .orElse(null));
+                        ingredient.setUser(defaultUser);
+                        ingredient.setInputDate(currentTimestamp);
+                        ingredient.setIsActive(true);
+                        ingredient.setCreatedAt(currentTimestamp);
+                        return ingredient;
+                    }).filter(ingredient -> ingredient.getRawMaterial() != null)
+                    .collect(Collectors.toSet());
+            //Save all ingredients in
+            ingredients = StreamSupport.stream(
+                    ingredientRepository.saveAll(ingredients).spliterator(), false)
+                    .collect(Collectors.toSet());
 
-        newFormula.setIngredientList(ingredients);
+            formula.setIngredientList(ingredients);
+            httpResponse.setData(formula);
+            httpResponse.setStatus(200);
+            httpResponse.setMessage("Success!");
+        } else {
+            httpResponse.setStatus(500);
+            httpResponse.setMessage("Internal Server Error!");
+        }
 
-        httpResponse.setData(newFormula);
-        httpResponse.setStatus(200);
-        httpResponse.setMessage("Success!");
+        return httpResponse;
+    }
+    //Todo-extract method from saveFormula
+    @PostMapping("/ingredients")
+    public HttpResponse saveIngredient() {
+        HttpResponse<Formula> httpResponse = new HttpResponse<>();
         return httpResponse;
     }
 }
