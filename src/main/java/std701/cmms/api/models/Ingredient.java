@@ -1,29 +1,36 @@
 package std701.cmms.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "ingredients")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Ingredient {
 
     @Id
-    @GeneratedValue
-    private long invId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer ingredientId;
 
     private double percentage;
     @ManyToOne
     @JoinColumn(name = "fk_user_id")
+    @JsonIgnore
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "fk_formula_id")
+    @JsonIgnore
     private Formula formula;
+
     @ManyToOne
     @JoinColumn(name = "fk_material_id")
     private RawMaterial rawMaterial;
 
     private java.sql.Timestamp inputDate;
-    private String desc;
+    private String ingredientDesc;
     private Boolean isActive;
     private java.sql.Timestamp createdAt;
 
@@ -44,12 +51,12 @@ public class Ingredient {
         this.inputDate = inputDate;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getIngredientDesc() {
+        return ingredientDesc;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setIngredientDesc(String ingredientDesc) {
+        this.ingredientDesc = ingredientDesc;
     }
 
     public Boolean getIsActive() {

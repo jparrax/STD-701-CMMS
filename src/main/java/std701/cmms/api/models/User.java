@@ -6,113 +6,114 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import javax.persistence.*;
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User {
-  @Id
-  @GeneratedValue
-  private long userId;
-  private String username;
-  private String password;
-  private String firstName;
-  private String lastName;
-  private String email;
-  private Boolean isActive;
-  private java.sql.Timestamp createdAt;
-  @ManyToOne
-  @JoinColumn(name = "fk_role_id")
-  private Role role;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer userId;
+    private String username;
+    private String password;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private Boolean isActive;
+    private java.sql.Timestamp createdAt;
+    @ManyToOne
+    @JoinColumn(name = "fk_role_id")
+    private Role role;
 
-  public long getUserId() {
-    return userId;
-  }
+    public Integer getUserId() {
+        return userId;
+    }
 
-  public void setUserId(long userId) {
-    this.userId = userId;
-  }
-
-
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  @JsonIgnore
-  public String getPassword() {
-    return password;
-  }
-  @JsonSetter
-  public void setPassword(String password) {
-    this.password = password;
-  }
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
 
-  public String getFirstName() {
-    return firstName;
-  }
+    public String getUsername() {
+        return username;
+    }
 
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
+    @JsonIgnore
+    public String getPassword() {
+        return password;
+    }
 
-  public String getLastName() {
-    return lastName;
-  }
-
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
-
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
+    @JsonSetter
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
 
-  public Boolean getIsActive() {
-    return isActive;
-  }
+    public String getFirstName() {
+        return firstName;
+    }
 
-  public void setIsActive(Boolean isActive) {
-    this.isActive = isActive;
-  }
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
 
-  public java.sql.Timestamp getCreatedAt() {
-    return createdAt;
-  }
+    public String getLastName() {
+        return lastName;
+    }
 
-  public void setCreatedAt(java.sql.Timestamp createdAt) {
-    this.createdAt = createdAt;
-  }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-  public Role getRole() {
-    return role;
-  }
 
-  public void setRole(Role role) {
-    this.role = role;
-  }
+    public String getEmail() {
+        return email;
+    }
 
-  @Override
-  public String toString() {
-    return "User{" +
-            "userId=" + userId +
-            ", username='" + username + '\'' +
-            ", password='" + password + '\'' +
-            ", firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
-            ", email='" + email + '\'' +
-            ", isActive='" + isActive + '\'' +
-            ", createdAt=" + createdAt +
-            ", role=" + role +
-            '}';
-  }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+
+    public java.sql.Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(java.sql.Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", isActive='" + isActive + '\'' +
+                ", createdAt=" + createdAt +
+                ", role=" + role +
+                '}';
+    }
 }
