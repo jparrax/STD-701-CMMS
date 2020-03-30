@@ -28,8 +28,8 @@ public class RawMaterial {
     @JsonIgnore
     private List<Inventory> inventoryList;
 
-    @Transient
     @JsonInclude()
+    @Transient
     private BigDecimal quantity;
 
     public Integer getMaterialId() {
@@ -101,12 +101,14 @@ public class RawMaterial {
     }
 
     public BigDecimal getQuantity() {
-        setQuantity(this.inventoryList
-                .stream()
-                .reduce(new BigDecimal(0), (total, inventory) -> {
-                    return total.add(inventory.getQuantity());
-                }, BigDecimal::add)
-        );
+        if(this.inventoryList != null){
+            setQuantity(this.inventoryList
+                    .stream()
+                    .reduce(new BigDecimal(0), (total, inventory) -> {
+                        return total.add(inventory.getQuantity());
+                    }, BigDecimal::add)
+            );
+        }
         return quantity;
     }
 

@@ -19,6 +19,8 @@ public class SupplierService {
     }
 
     public List<Supplier> findAllSupplier(){
-        return StreamSupport.stream(supplierRepository.findAll().spliterator(), false).collect(Collectors.toList());
+        return StreamSupport.stream(supplierRepository.findAll()
+                .spliterator(), false)
+                .collect(Collectors.toList());
     }
 }
