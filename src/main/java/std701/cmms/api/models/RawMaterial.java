@@ -1,8 +1,12 @@
 package std701.cmms.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "raw_materials")
@@ -19,6 +23,14 @@ public class RawMaterial {
     @JoinColumn(name = "fk_user_id")
     private User user;
 
+    @Where(clause = "is_active = 'true'")
+    @OneToMany(mappedBy = "rawMaterial")
+    @JsonIgnore
+    private List<Inventory> inventoryList;
+
+    @JsonInclude()
+    @Transient
+    private BigDecimal quantity;
 
     public Integer getMaterialId() {
         return materialId;
@@ -70,5 +82,37 @@ public class RawMaterial {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public List<Inventory> getInventoryList() {
+        return inventoryList;
+    }
+
+    public void setInventoryList(List<Inventory> inventoryList) {
+        this.inventoryList = inventoryList;
+    }
+
+    public BigDecimal getQuantity() {
+        if(this.inventoryList != null){
+            setQuantity(this.inventoryList
+                    .stream()
+                    .reduce(new BigDecimal(0), (total, inventory) -> {
+                        return total.add(inventory.getQuantity());
+                    }, BigDecimal::add)
+            );
+        }
+        return quantity;
+    }
+
+    public void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity;
     }
 }
