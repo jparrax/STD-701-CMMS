@@ -8,6 +8,34 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "inventories")
+@SqlResultSetMapping(
+        name = "inventoryReportMapping",
+        classes = {
+                @ConstructorResult(
+                        targetClass = InventoryReport.class,
+                        columns = {
+                                @ColumnResult(name = "materialName"),
+                                @ColumnResult(name = "inciName"),
+                                @ColumnResult(name = "batchNumber"),
+                                @ColumnResult(name = "analysisNumber"),
+                                @ColumnResult(name = "quantity", type=BigDecimal.class),
+                                @ColumnResult(name = "supplier")
+                        }
+                )
+        }
+)
+@NamedNativeQuery(name="Inventory.getInventoryReport",query = "select inventories.material_id, raw_materials.\"name\" as materialName,\n" +
+        "raw_materials.inci_name as inciName,\n" +
+        "string_agg(batch_number, ', ') as batchNumber, \n" +
+        "string_agg(analysis_number, ', ') as analysisNumber,\n" +
+        "string_agg(suppliers.\"name\", ', ') as supplier,\n" +
+        "sum(quantity) as quantity\n" +
+        "from inventories\n" +
+        "left join raw_materials on inventories.material_id = raw_materials.material_id\n" +
+        "left join suppliers on inventories.supplier = suppliers.supplier_id\n" +
+        "where inventories.created_at > ?1 and inventories.created_at < ?2\n" +
+        "group by inventories.material_id , raw_materials.\"name\" , raw_materials.inci_name;",
+        resultSetMapping = "inventoryReportMapping")
 public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
