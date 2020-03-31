@@ -7,13 +7,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import std701.cmms.api.models.Formula;
 import std701.cmms.api.models.HttpResponse;
+import std701.cmms.api.models.Inventory;
 import std701.cmms.api.models.RawMaterial;
 import std701.cmms.api.models.Supplier;
 import std701.cmms.api.models.User;
 import std701.cmms.api.repositories.InventoryRepository;
 import std701.cmms.api.repositories.RawMaterialRepository;
+import std701.cmms.api.repositories.SupplierRepository;
 import std701.cmms.api.repositories.UserRepository;
 import std701.cmms.api.services.SupplierService;
 
@@ -27,20 +28,19 @@ import java.util.stream.StreamSupport;
 @RequestMapping("/rawmaterials")
 public class RawMaterialController {
     private RawMaterialRepository rawMaterialRepository;
-    private SupplierService supplierService;
     private UserRepository userRepository;
     private InventoryRepository inventoryRepository;
-
+    private SupplierRepository supplierRepository;
 
     @Autowired
     public RawMaterialController(RawMaterialRepository rawMaterialRepository,
-                                 SupplierService supplierService,
                                  UserRepository userRepository,
-                                 InventoryRepository inventoryRepository) {
+                                 InventoryRepository inventoryRepository,
+                                 SupplierRepository supplierRepository) {
         this.rawMaterialRepository = rawMaterialRepository;
-        this.supplierService = supplierService;
         this.userRepository = userRepository;
         this.inventoryRepository = inventoryRepository;
+        this.supplierRepository = supplierRepository;
     }
 
     @GetMapping
@@ -80,17 +80,35 @@ public class RawMaterialController {
     }
 
     @GetMapping("/inventories/{materialId}")
-    public  Object getInventories(@PathVariable Integer materialId){
-        HttpResponse<RawMaterial> httpResponse = new HttpResponse<>();
+    public List<Inventory> getInventories(@PathVariable Integer materialId) {
 
         return inventoryRepository.findByRawMaterialOrderByCreatedAtDesc(rawMaterialRepository.findById(materialId)
                 .orElse(null));
     }
 
     @PostMapping("/inventories")
-    public HttpResponse saveInventories() {
-        HttpResponse<RawMaterial> httpResponse = new HttpResponse<>();
+    public HttpResponse<Inventory> saveInventories(@RequestBody Inventory inventory) {
+        HttpResponse<Inventory> httpResponse = new HttpResponse<>();
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        if (inventory.getInvId() == null) {
+            inventory.setCreatedAt(currentTimestamp);
+            inventory.setIsActive(true);
+        }
 
+        inventory.setRawMaterial(rawMaterialRepository.findById(inventory.getRawMaterial().getMaterialId())
+                .orElse(null));
+        inventory.setSupplier(supplierRepository.findById(inventory.getSupplier().getSupplierId())
+                .orElse(null));
+
+        inventory = inventoryRepository.save(inventory);
+        if (inventory.getInvId() != null) {
+            httpResponse.setStatus(200);
+            httpResponse.setMessage("Success!");
+            httpResponse.setData(inventory);
+        } else {
+            httpResponse.setStatus(500);
+            httpResponse.setMessage("Internal Server Error!");
+        }
         return httpResponse;
     }
 
@@ -99,7 +117,8 @@ public class RawMaterialController {
         HttpResponse<List<Supplier>> response = new HttpResponse<>();
         response.setMessage("Success!");
         response.setStatus(200);
-        response.setData(supplierService.findAllSupplier());
+        response.setData(StreamSupport.stream(supplierRepository.findAll().spliterator(), false)
+                .collect(Collectors.toList()));
 
         return response;
     }
