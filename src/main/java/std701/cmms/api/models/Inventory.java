@@ -56,6 +56,10 @@ public class Inventory {
     private BigDecimal quantity;
     private Boolean isActive;
     private java.sql.Timestamp createdAt;
+    @Transient
+    private Integer materialId;
+    @Transient
+    private Integer supplierId;
 
 
     public Integer getInvId() {
@@ -143,5 +147,21 @@ public class Inventory {
 
     public void setSupplier(Supplier supplier) {
         this.supplier = supplier;
+    }
+
+    public Integer getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(Integer materialId) {
+        this.materialId = materialId;
+    }
+
+    public Integer getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Integer supplierId) {
+        this.supplierId = supplierId;
     }
 }

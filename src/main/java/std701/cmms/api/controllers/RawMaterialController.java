@@ -95,9 +95,9 @@ public class RawMaterialController {
             inventory.setIsActive(true);
         }
 
-        inventory.setRawMaterial(rawMaterialRepository.findById(inventory.getRawMaterial().getMaterialId())
+        inventory.setRawMaterial(rawMaterialRepository.findById(inventory.getMaterialId())
                 .orElse(null));
-        inventory.setSupplier(supplierRepository.findById(inventory.getSupplier().getSupplierId())
+        inventory.setSupplier(supplierRepository.findById(inventory.getSupplierId())
                 .orElse(null));
 
         inventory = inventoryRepository.save(inventory);
